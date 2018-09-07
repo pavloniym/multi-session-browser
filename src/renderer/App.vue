@@ -8,11 +8,14 @@
             </div>
             <div class="app__side__tabs">
                 <div
-                    class="app__side__tabs__tab"
                     v-for="(t, tk) in tabs"
+                    class="app__side__tabs__tab"
                     :key="tk"
                     :style="{backgroundImage: t.favicon ? `url('${t.favicon}')` : null}"
                     @click="tab = tk">
+
+                    <i v-if="!t.favicon" class="fa fa-window-maximize"></i>
+
                 </div>
                 <div class="app__side__tabs__tab new" @click="addTab">+</div>
 
@@ -40,19 +43,19 @@
     import WView from './components/View'
     import moment from 'moment'
 
+    import {mapGetters, mapActions} from 'vuex'
+
     export default {
         name: 'electron-app',
         components: {
             WView
         },
 
-        data() {
-            return {
-                tabs: [],
-                tab: null,
-            }
-        },
+        computed: {
+            
+            ...mapGetters('tabs', ['tab', 'tabs']),
 
+        },
         methods: {
 
 
@@ -130,8 +133,8 @@
                         border: 1px solid transparent;
                         cursor: pointer;
                         background-size: cover;
-                        background-color: #585858;
                         background-repeat: no-repeat;
+                        text-align: center;
 
                         &.new {
                             display: flex;
@@ -140,6 +143,12 @@
                             font-size: 14px;
                             background: transparent;
                             border: 1px dashed white;
+                        }
+
+
+                        i {
+                            color: #575757;
+
                         }
                     }
                 }

@@ -2,39 +2,48 @@
 
     <div class="view__container">
 
+        <!-- Progress -->
+        <nprogress class="view__container__progress" />
+
+        <!-- Controls -->
         <div class="view__container__controls">
 
+            <!-- Backward -->
             <div class="view__container__controls__button" @click="view.canGoBack() ? view.goBack() : null">
-                <i class="fa fa-chevron-left"></i>
+                <i class="fa fa-arrow-left"></i>
             </div>
 
+
+            <!-- Forward -->
             <div class="view__container__controls__button" @click="view.canGoForward() ? view.goForward() : null">
-                <i class="fa fa-chevron-right"></i>
+                <i class="fa fa-arrow-right"></i>
+            </div>
+
+            <!-- Reload -->
+            <div class="view__container__controls__button" @click="loading ? view.stop() : view.reload()">
+                <i class="fa" :class="{'fa-refresh' : !loading, 'fa-times' : loading}"></i>
             </div>
 
 
-            <div class="view__container__controls__button" @click="view.reload()">
-                <i class="fa fa-refresh"></i>
-            </div>
-
-
+            <!-- Search -->
             <input type="text" placeholder="URL" @keyup.enter="(e) => navigate(e.target.value)" :value="url">
-
 
 
             <!-- Close event -->
             <div class="view__container__controls__button right" @click="$emit('close')">
-                <i class="fa fa-times"></i>
+                <i class="fa fa-trash"></i>
             </div>
+
 
         </div>
 
+        <!-- View -->
         <div class="view__container__content">
             <webview
                 ref="view"
+                style="height:100%;width: 100%"
                 autosize
                 :src="url"
-                style="height:100%;width: 100%"
                 :guestinstance="hash"
                 :partition="`persist:${hash}`">
             </webview>
@@ -47,8 +56,20 @@
 
 <script>
 
+    import nprogress from 'vue-nprogress/src/NprogressContainer'
+
     import get from 'lodash/get'
     import moment from 'moment'
+
+    const events = {
+        'did-finish-load': 'didFinishLoad',
+        'page-favicon-updated': 'pageFaviconUpdated',
+        'did-navigate' : 'didNavigate',
+        'new-window' : 'newWindow',
+        'did-start-loading': 'didStartLoading',
+        'did-stop-loading': 'didStopLoading'
+
+    };
 
     export default {
         data() {
@@ -57,24 +78,13 @@
                 favicon: null,
                 view: null,
                 hash: moment().format('x'),
-
-                events: {
-                    'did-finish-load': 'didFinishLoad',
-                    'page-favicon-updated': 'pageFaviconUpdated',
-                    'did-navigate' : 'didNavigate',
-                    'new-window' : 'newWindow'
-                }
+                loading: false,
             }
         },
 
-
+        components: {nprogress},
         methods: {
 
-
-            didFinishLoad() {
-                this.view.removeEventListener('did-finish-load', this.didFinishLoad);
-                this.navigate(this.url)
-            },
 
             /**
              * Set view src
@@ -83,6 +93,16 @@
             navigate(url) {
                 this.view.loadURL(url);
                 this.url = url;
+            },
+
+
+            /**
+             * Fire then webview finish loading
+             *
+             */
+            didFinishLoad() {
+                this.view.removeEventListener('did-finish-load', this.didFinishLoad);
+                this.navigate(this.url)
             },
 
 
@@ -98,6 +118,18 @@
 
             didNavigate(e) {
                 this.url = get(e, 'url', 'about:blank');
+            },
+
+
+            didStartLoading() {
+                this.$nprogress.start();
+                this.loading = true;
+            },
+
+
+            didStopLoading() {
+                this.$nprogress.done();
+                this.loading = false;
             }
 
 
@@ -106,12 +138,11 @@
 
         mounted() {
 
+            // Get webview content
             this.view = this.$refs.view;
 
-            Object.keys(this.events).forEach(event => {
-                this.view.addEventListener(event, this[this.events[event]]);
-            })
-
+            // Apply events listeners
+            Object.keys(events).forEach(event => this.view.addEventListener(event, this[events[event]]))
         },
 
         watch: {
@@ -135,29 +166,40 @@
         display: flex;
         flex-direction: column;
 
+        &__progress {
+            overflow: initial;
+            position: initial;
+        }
+
         &__controls {
-            height: 30px;
+            height: 40px;
             background: white;
             display: flex;
             align-items: center;
             font-size: 12px;
             color: #a8a8a8;
-            box-shadow: 0 2px 18px 0 rgba(0, 0, 0, 0.15);
+            border-bottom: 1px solid #eaeaea;
             z-index: 1;
+            padding: 10px;
 
             &__button {
-                height: 100%;
-                border-right: 1px solid #eaeaea;
-                padding: 0 10px;
+                height: 25px;
                 display: flex;
                 align-items: center;
                 cursor: pointer;
+                justify-content: center;
+                width: 25px;
+                margin: 0 5px;
+                font-size: 12px;
+                min-width: 25px;
+                border-radius: 50%;
+                background: transparent;
+                transition: .2s ease;
 
-                &.right {
-                    border-right: none;
-                    border-left: 1px solid #eaeaea;
+                &:hover {
+                    background: #f7f7f7;
+
                 }
-
             }
 
             input {
