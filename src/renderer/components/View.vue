@@ -40,10 +40,11 @@
         <!-- View -->
         <div class="view__container__content">
             <webview
+                v-if="initialized"
                 ref="view"
                 style="height:100%;width: 100%"
                 autosize
-                :src="url"
+                :src="url || startFrom"
                 :guestinstance="hash"
                 :partition="`persist:${hash}`">
             </webview>
@@ -57,9 +58,8 @@
 <script>
 
     import nprogress from 'vue-nprogress/src/NprogressContainer'
-
     import get from 'lodash/get'
-    import moment from 'moment'
+
 
     const events = {
         'did-finish-load': 'didFinishLoad',
@@ -67,17 +67,40 @@
         'did-navigate' : 'didNavigate',
         'new-window' : 'newWindow',
         'did-start-loading': 'didStartLoading',
-        'did-stop-loading': 'didStopLoading'
+        'did-stop-loading': 'didStopLoading',
+        'dom-ready': 'domReady'
 
     };
 
+    const props = {
+        url: {
+            type: String,
+            default: null,
+        },
+
+        hash: {
+            type: String,
+            default: null
+        },
+
+        session: {
+            type: String,
+            default: null
+        },
+
+        hostSession: {
+            type: String,
+            default: null
+        }
+    };
+
     export default {
+        props,
         data() {
             return {
-                url: 'http://google.com',
-                favicon: null,
+                startFrom: 'http://google.com',
                 view: null,
-                hash: moment().format('x'),
+                initialized: false,
                 loading: false,
             }
         },
@@ -91,8 +114,9 @@
              *
              */
             navigate(url) {
+
                 this.view.loadURL(url);
-                this.url = url;
+                this.$emit('url', url);
             },
 
 
@@ -107,17 +131,17 @@
 
 
             pageFaviconUpdated(r) {
-                this.favicon = get(r, 'favicons.0', null);
+                this.$emit('favicon', get(r, 'favicons.0', null));
             },
 
 
             newWindow(e) {
-                this.navigate(get(e, 'url', 'http://google.com'))
+                this.navigate(get(e, 'url', this.startFrom))
             },
 
 
             didNavigate(e) {
-                this.url = get(e, 'url', 'about:blank');
+                this.$emit('url', get(e, 'url', 'about:blank'));
             },
 
 
@@ -130,30 +154,47 @@
             didStopLoading() {
                 this.$nprogress.done();
                 this.loading = false;
-            }
+            },
+
+
+
+            /**
+             * Load view
+             * Create event listeners
+             *
+             */
+            initView() {
+
+                this.view = this.$refs.view;
+                Object.keys(events).forEach(event => this.view.addEventListener(event, this[events[event]]))
+
+            },
 
 
         },
-
 
         mounted() {
 
-            // Get webview content
-            this.view = this.$refs.view;
+            /**
+             * Check tab session
+             * If it was created before -> load it after dom ready
+             * If it was created now -> load it now
+             *
+             */
+            if(this.hostSession !== this.session) {
 
-            // Apply events listeners
-            Object.keys(events).forEach(event => this.view.addEventListener(event, this[events[event]]))
+                document.addEventListener("DOMContentLoaded", () => {
+                    this.initialized = true;
+                    this.$nextTick(() => this.initView())
+                });
+
+            } else {
+
+                this.initialized = true;
+                this.$nextTick(() => this.initView())
+            }
         },
 
-        watch: {
-
-            // Watch for favicon change
-            favicon: {
-                handler(favicon) {
-                    this.$emit('favicon', favicon);
-                }
-            }
-        }
 
 
     }
@@ -173,6 +214,9 @@
 
         &__controls {
             height: 40px;
+            min-height: 40px;
+            max-height: 40px;
+
             background: white;
             display: flex;
             align-items: center;

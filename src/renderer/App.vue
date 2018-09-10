@@ -10,14 +10,15 @@
                 <div
                     v-for="(t, tk) in tabs"
                     class="app__side__tabs__tab"
+                    :class="{'active' : tk === tab}"
                     :key="tk"
                     :style="{backgroundImage: t.favicon ? `url('${t.favicon}')` : null}"
-                    @click="tab = tk">
+                    @click="setActiveTab(tk)">
 
                     <i v-if="!t.favicon" class="fa fa-window-maximize"></i>
 
                 </div>
-                <div class="app__side__tabs__tab new" @click="addTab">+</div>
+                <div class="app__side__tabs__tab new" @click="setNewTab">+</div>
 
             </div>
 
@@ -28,8 +29,13 @@
                 v-show="k === tab"
                 v-for="(i,k) in tabs"
                 :key="i.hash"
-                @close="(tabs.splice(k, 1), tab = null)"
-                @favicon="i.favicon = $event">
+                :url="i.url"
+                :hash="i.hash"
+                :session="i.session"
+                :hostSession="session"
+                @url="setURL(k, $event)"
+                @close="removeThisTab(k)"
+                @favicon="setFavicon(k, $event)">
             </w-view>
 
         </div>
@@ -43,7 +49,7 @@
     import WView from './components/View'
     import moment from 'moment'
 
-    import {mapGetters, mapActions} from 'vuex'
+    import {mapGetters, mapMutations} from 'vuex'
 
     export default {
         name: 'electron-app',
@@ -52,35 +58,66 @@
         },
 
         computed: {
-            
+
             ...mapGetters('tabs', ['tab', 'tabs']),
 
         },
+        data() {
+            return {
+                session: moment().format('x')
+            }
+        },
         methods: {
+
+
+            ...mapMutations('tabs', ['update', 'add', 'remove']),
+
 
 
             /**
              * Set favicon to tab
              *
+             * @param key
              * @param favicon
-             * @param tab
              */
-            setFavicon(favicon, tab) {
-                tab.favicon = favicon
+            setFavicon(key, favicon) {
+                this.update({
+                    k: `tabs.${key}.favicon`,
+                    v: favicon
+                })
             },
 
+
+            setURL(key, url) {
+                this.update({
+                    k: `tabs.${key}.url`,
+                    v: url
+                })
+            },
+
+
+            setActiveTab(index) {
+              this.update({
+                  k: 'tab',
+                  v: index,
+              })
+            },
 
 
             /**
              * Add new tab to stack
              *
              */
-            addTab() {
-                this.tab = this.tabs.push({
-                    favicon: null,
-                    hash: moment().format('x')
-                }) - 1;
+            setNewTab() {
+
+                this.add({session: this.session});
+                this.update({k: 'tab', v: this.tabs.length - 1});
             },
+
+
+            removeThisTab(index) {
+                this.remove(index)
+            }
 
         },
 
@@ -113,7 +150,7 @@
 
 
                 &__head {
-                    height: 30px;
+                    height: 40px;
                     background: lighten(#2c2c2c, 10);
 
                 }
@@ -135,6 +172,7 @@
                         background-size: cover;
                         background-repeat: no-repeat;
                         text-align: center;
+                        transition: .2s ease;
 
                         &.new {
                             display: flex;
@@ -145,11 +183,26 @@
                             border: 1px dashed white;
                         }
 
-
                         i {
                             color: #575757;
 
                         }
+
+                        &.active {
+                            position: relative;
+
+                            &:before {
+                                content: "";
+                                position: absolute;
+                                width: 4px;
+                                background: #3a539b;
+                                top: -3px;
+                                height: 130%;
+                                left: -10px;
+                            }
+                        }
+
+
                     }
                 }
             }
