@@ -1,0 +1,22 @@
+@font-face {
+    font-family: "{{fontName}}";
+    src: {{{src}}};
+}
+
+{{baseSelector}} {
+    line-height: normal;
+    display: flex;
+    align-items:center;
+}
+
+{{baseSelector}}:before {
+    font-family: {{fontName}} !important;
+    font-style: normal;
+    font-weight: normal !important;
+}
+
+{{#each codepoints}}
+    .{{../classPrefix}}{{@key}}:before {
+    content: "\\{{this}}";
+    }
+{{/each}}

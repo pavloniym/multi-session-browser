@@ -5,6 +5,7 @@ import App from './App'
 import store from './store'
 
 import 'font-awesome/css/font-awesome.min.css'
+import './../fonts/browser/browser.font'
 
 
 Vue.use(NProgress)

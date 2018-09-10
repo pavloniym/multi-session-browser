@@ -4,7 +4,7 @@
 
         <div class="app__side">
             <div class="app__side__head">
-
+                <i class="b b-tabs"></i>
             </div>
             <div class="app__side__tabs">
                 <div
