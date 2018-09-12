@@ -1,0 +1,37 @@
+$folder: './../../fonts/Roboto';
+$thin: $folder + '/Thin/RobotoThinWebfont';
+$light: $folder + '/Light/RobotoLightWebfont';
+$regular: $folder + '/Regular/RobotoRegularWebfont';
+$medium: $folder + '/Medium/RobotoMediumWebfont';
+$bold: $folder + '/Bold/RobotoBoldWebfont';
+
+@font-face {
+    font-family: "Roboto";
+    font-weight: 200;
+    src: url($thin + '.woff') format('woff'), url($thin + '.ttf') format('ttf');
+}
+
+@font-face {
+    font-family: "Roboto";
+    font-weight: 300;
+    src: url($light + '.woff') format('woff'), url($light + '.ttf') format('ttf');
+
+}
+
+@font-face {
+    font-family: "Roboto";
+    font-weight: 400;
+    src: url($regular + '.woff') format('woff'), url($regular + '.ttf') format('ttf');
+}
+
+@font-face {
+    font-family: "Roboto";
+    font-weight: 500;
+    src: url($medium + '.woff') format('woff'), url($medium + '.ttf') format('ttf');
+}
+
+@font-face {
+    font-family: "Roboto";
+    font-weight: 700;
+    src: url($bold + '.woff') format('woff'), url($bold + '.ttf') format('ttf');
+}

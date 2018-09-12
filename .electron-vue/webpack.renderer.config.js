@@ -109,9 +109,6 @@ let rendererConfig = {
                     'css-loader',
                     {
                         loader: 'webfonts-loader',
-                        options: {
-                            //fileName: utils.assetsPath('fonts/[fontname].[chunkhash].[ext]'),
-                        }
                     }
                 ]
             },
@@ -147,7 +144,9 @@ let rendererConfig = {
     resolve: {
         alias: {
             '@': path.join(__dirname, '../src/renderer'),
-            'vue$': 'vue/dist/vue.esm.js'
+            '@scss': path.join(__dirname, '../src/assets/scss'),
+            'vue$': 'vue/dist/vue.esm.js',
+
         },
         extensions: ['.js', '.vue', '.json', '.css', '.node']
     },

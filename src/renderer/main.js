@@ -4,8 +4,10 @@ import NProgress from 'vue-nprogress'
 import App from './App'
 import store from './store'
 
+// Load fonts
 import 'font-awesome/css/font-awesome.min.css'
-import './../fonts/browser/browser.font'
+import './../assets/fonts/browser/browser.font'
+import './../assets/scss/fonts/index.scss'
 
 
 Vue.use(NProgress)
