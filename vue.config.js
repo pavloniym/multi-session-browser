@@ -1,5 +1,7 @@
+const path = require('path');
+
 module.exports = {
-    configureWebpack: {
+    /*configureWebpack: {
         module: {
             rules: [
                 {
@@ -10,12 +12,17 @@ module.exports = {
                         {
                             loader: 'webfonts-loader',
                             options: {
-                                fileName: utils.assetsPath('fonts/[fontname].[chunkhash].[ext]'),
+                                //fileName: utils.assetsPath('fonts/[fontname].[chunkhash].[ext]'),
                             }
                         }
                     ]
                 }
             ]
         }
+    }*/
+
+    configureWebpack: (config) => {
+        console.log(config);
     }
+
 }

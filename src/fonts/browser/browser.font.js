@@ -28,10 +28,8 @@ module.exports = {
      */
     rename: function(name){
 
-        console.log(name);
-
         let basepath = name;
-        let folder = basepath.slice(basepath.indexOf(fontName) + fontName.length + 1);
+        let folder = basepath.slice(basepath.indexOf(fontSVGFolder) + fontSVGFolder.length + 1);
         return folder.split('/').join('-').replace(/\.[^/.]+$/, "");
     }
 };
