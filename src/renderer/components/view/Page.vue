@@ -2,9 +2,6 @@
 
     <div class="view__container">
 
-        <!-- Progress -->
-        <nprogress class="view__container__progress" />
-
         <!-- Controls -->
         <div class="view__container__controls">
 
@@ -24,6 +21,10 @@
                 <i class="fa" :class="{'fa-refresh' : !loading, 'fa-times' : loading}"></i>
             </div>
 
+            <!-- Loading -->
+            <div class="view__container__controls__button button--not-interactive">
+                <i class="fa fa-circle-o-notch fa-spin" v-if="loading"></i>
+            </div>
 
             <!-- Search -->
             <input type="text" placeholder="URL" @keyup.enter="(e) => navigate(e.target.value)" :value="url">
@@ -40,9 +41,9 @@
         <!-- View -->
         <div class="view__container__content">
             <webview
+                class="webview"
                 v-if="initialized"
                 ref="view"
-                style="height:100%;width: 100%"
                 autosize
                 :src="url || startFrom"
                 :guestinstance="hash"
@@ -57,19 +58,16 @@
 
 <script>
 
-    import nprogress from 'vue-nprogress/src/NprogressContainer'
     import get from 'lodash/get'
-
 
     const events = {
         'did-finish-load': 'didFinishLoad',
         'page-favicon-updated': 'pageFaviconUpdated',
         'did-navigate' : 'didNavigate',
+        'did-navigate-in-page': 'didNavigate',
         'new-window' : 'newWindow',
         'did-start-loading': 'didStartLoading',
         'did-stop-loading': 'didStopLoading',
-        'dom-ready': 'domReady'
-
     };
 
     const props = {
@@ -105,7 +103,6 @@
             }
         },
 
-        components: {nprogress},
         methods: {
 
 
@@ -118,6 +115,7 @@
                 this.view.loadURL(url);
                 this.$emit('url', url);
             },
+
 
 
             /**
@@ -146,13 +144,11 @@
 
 
             didStartLoading() {
-                this.$nprogress.start();
                 this.loading = true;
             },
 
 
             didStopLoading() {
-                this.$nprogress.done();
                 this.loading = false;
             },
 
@@ -244,13 +240,18 @@
                     background: #f7f7f7;
 
                 }
+
+                &.button--not-interactive {
+                    background: transparent;
+                    cursor: default;
+                    color: #eaeaea;
+                }
             }
 
             input {
                 height: 100%;
                 width: 100%;
                 border: none;
-                padding: 0 0 0 10px;
 
                 &:focus {
                     outline: none;
@@ -260,6 +261,16 @@
 
         &__content {
             height: 100%;
+            position: relative;
+
+            .webview {
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                display: inline-flex !important;
+            }
         }
     }
 
