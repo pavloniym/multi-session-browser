@@ -49,6 +49,7 @@
             transition: .2s ease;
 
             &.tab--new {
+                margin-top: 10px;
                 display: flex;
                 align-items: center;
                 justify-content: center;

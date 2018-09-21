@@ -2,6 +2,7 @@ import Vue from 'vue'
 
 import App from './App'
 import store from './store'
+
 // Load fonts
 import 'font-awesome/css/font-awesome.min.css'
 import './../assets/fonts/browser/browser.font'

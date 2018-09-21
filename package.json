@@ -54,6 +54,7 @@
     "font-awesome": "^4.7.0",
     "lodash": "^4.17.10",
     "moment": "^2.22.2",
+    "urijs": "^1.19.1",
     "vue": "^2.5.16",
     "vue-electron": "^1.0.6",
     "vue-nprogress": "^0.1.5",

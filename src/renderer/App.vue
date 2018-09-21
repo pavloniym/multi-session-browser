@@ -2,9 +2,9 @@
     <div id="app">
 
 
-        <div class="app__side">
+        <side-bar>
             <side-head/>
-            <div class="app__side__tabs">
+            <side-tabs>
                 <side-tab
                     v-for="(t, k) in tabs"
                     :key="k"
@@ -12,18 +12,21 @@
                     :favicon="t.favicon || null"
                     @click.native="setActiveTab(k)">
                 </side-tab>
+
                 <side-tab
                     class="tab--new"
                     @click.native="setNewTab">
                     <i class="fa fa-plus"></i>
                 </side-tab>
-            </div>
-        </div>
+
+            </side-tabs>
+        </side-bar>
+
 
 
         <div class="app__views">
             <div class="app__views__container" v-if="tab >= 0 && tabs[tab]">
-                <page-view
+                <content-view
                     v-show="k === tab "
                     v-for="(i,k) in tabs"
                     :key="i.hash"
@@ -34,7 +37,7 @@
                     @url="setURL(k, $event)"
                     @close="removeThisTab(k)"
                     @favicon="setFavicon(k, $event)">
-                </page-view>
+                </content-view>
             </div>
             <empty-view v-else/>
         </div>
@@ -46,20 +49,23 @@
 <script>
 
 
-    import SideHead from './components/side/Head'
-    import SideTab from './components/side/Tab'
 
-    import EmptyView from './components/view/Empty'
-    import PageView from './components/view/Page'
+    import {Bar as SideBar, Head as SideHead, Tabs as SideTabs, Tab as SideTab} from './components/side'
+
+
+    import EmptyView from './components/view/pages/Empty'
+    import ContentView from './components/view/pages/Content'
 
     import moment from 'moment'
+    import get from 'lodash/get'
+
     import {mapGetters, mapMutations} from 'vuex'
 
     export default {
         name: 'clone-browser',
         components: {
-            SideHead, SideTab,
-            EmptyView, PageView,
+            SideBar, SideHead, SideTabs, SideTab,
+            EmptyView, ContentView,
         },
 
         data() {
@@ -68,9 +74,7 @@
             }
         },
 
-        computed: {
-            ...mapGetters('tabs', ['tab', 'tabs']),
-        },
+        computed: mapGetters('tabs', ['tab', 'tabs']),
 
         methods: {
             ...mapMutations('tabs', ['update', 'add', 'remove']),
@@ -97,10 +101,11 @@
              * @param url
              */
             setURL(key, url) {
-                this.update({
-                    k: `tabs.${key}.url`,
-                    v: url
-                })
+
+                const currentUrl = get(this.tabs, [this.tab, 'url'], null);
+                console.log(url, currentUrl, url !== currentUrl);
+
+                if(url !== currentUrl) this.update({k: `tabs.${key}.url`, v: url})
             },
 
 
@@ -170,19 +175,7 @@
                 width: 100%;
 
                 .app {
-                    &__side {
-                        width: 40px;
-                        background: #2c2c2c;
-                        height: 100%;
-                        color: white;
 
-                        &__tabs {
-                            display: flex;
-                            flex-direction: column;
-                            align-items: center;
-                            padding: 5px 0;
-                        }
-                    }
 
                     &__views {
                         width: 100%;

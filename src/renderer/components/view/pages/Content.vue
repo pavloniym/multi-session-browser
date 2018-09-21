@@ -3,40 +3,28 @@
     <div class="view__container">
 
         <!-- Controls -->
-        <div class="view__container__controls">
+        <bar>
 
-            <!-- Backward -->
-            <div class="view__container__controls__button" @click="view.canGoBack() ? view.goBack() : null">
-                <i class="fa fa-arrow-left"></i>
-            </div>
+            <!-- History -->
+            <action icon="fa fa-arrow-left" @click.native="view.canGoBack() ? view.goBack() : null"/>
+            <action icon="fa fa-arrow-right" @click.native="view.canGoForward() ? view.goForward() : null"/>
 
-
-            <!-- Forward -->
-            <div class="view__container__controls__button" @click="view.canGoForward() ? view.goForward() : null">
-                <i class="fa fa-arrow-right"></i>
-            </div>
-
-            <!-- Reload -->
-            <div class="view__container__controls__button" @click="loading ? view.stop() : view.reload()">
-                <i class="fa" :class="{'fa-refresh' : !loading, 'fa-times' : loading}"></i>
-            </div>
 
             <!-- Loading -->
-            <div class="view__container__controls__button button--not-interactive">
+            <action :icon="!loading ? 'fa fa-refresh' : 'fa fa-times'" @click.native="loading ? view.stop() : view.reload()"/>
+            <action class="not-interactive">
                 <i class="fa fa-circle-o-notch fa-spin" v-if="loading"></i>
-            </div>
+            </action>
+
 
             <!-- Search -->
-            <input type="text" placeholder="URL" @keyup.enter="(e) => navigate(e.target.value)" :value="url">
+            <url @navigate="navigate($event)" :value="url" />
 
 
             <!-- Close event -->
-            <div class="view__container__controls__button right" @click="$emit('close')">
-                <i class="fa fa-trash"></i>
-            </div>
+            <action icon="fa fa-trash" @click.native="$emit('close')" />
 
-
-        </div>
+        </bar>
 
         <!-- View -->
         <div class="view__container__content">
@@ -45,6 +33,8 @@
                 v-if="initialized"
                 ref="view"
                 autosize
+                allowpopups
+                webpreferences="nativeWindowOpen=true"
                 :src="url || startFrom"
                 :guestinstance="hash"
                 :partition="`persist:${hash}`">
@@ -60,12 +50,16 @@
 
     import get from 'lodash/get'
 
+    import Action from './../controls/action'
+    import Bar from './../controls/bar'
+    import Url from './../controls/url'
+
     const events = {
         'did-finish-load': 'didFinishLoad',
         'page-favicon-updated': 'pageFaviconUpdated',
-        'did-navigate' : 'didNavigate',
+        'did-navigate': 'didNavigate',
         'did-navigate-in-page': 'didNavigate',
-        'new-window' : 'newWindow',
+        'new-window': 'newWindow',
         'did-start-loading': 'didStartLoading',
         'did-stop-loading': 'didStopLoading',
     };
@@ -103,6 +97,10 @@
             }
         },
 
+        components: {
+            Action, Bar, Url
+        },
+
         methods: {
 
 
@@ -112,10 +110,11 @@
              */
             navigate(url) {
 
+
+
                 this.view.loadURL(url);
                 this.$emit('url', url);
             },
-
 
 
             /**
@@ -139,7 +138,7 @@
 
 
             didNavigate(e) {
-                this.$emit('url', get(e, 'url', 'about:blank'));
+                //this.$emit('url', get(e, 'url', 'about:blank'));
             },
 
 
@@ -151,7 +150,6 @@
             didStopLoading() {
                 this.loading = false;
             },
-
 
 
             /**
@@ -177,7 +175,7 @@
              * If it was created now -> load it now
              *
              */
-            if(this.hostSession !== this.session) {
+            if (this.hostSession !== this.session) {
 
                 document.addEventListener("DOMContentLoaded", () => {
                     this.initialized = true;
@@ -192,7 +190,6 @@
         },
 
 
-
     }
 </script>
 
@@ -203,61 +200,6 @@
         display: flex;
         flex-direction: column;
 
-        &__progress {
-            overflow: initial;
-            position: initial;
-        }
-
-        &__controls {
-            height: 40px;
-            min-height: 40px;
-            max-height: 40px;
-
-            background: white;
-            display: flex;
-            align-items: center;
-            font-size: 12px;
-            color: #a8a8a8;
-            border-bottom: 1px solid #eaeaea;
-            z-index: 1;
-            padding: 10px;
-
-            &__button {
-                height: 25px;
-                display: flex;
-                align-items: center;
-                cursor: pointer;
-                justify-content: center;
-                width: 25px;
-                margin: 0 5px;
-                font-size: 12px;
-                min-width: 25px;
-                border-radius: 50%;
-                background: transparent;
-                transition: .2s ease;
-
-                &:hover {
-                    background: #f7f7f7;
-
-                }
-
-                &.button--not-interactive {
-                    background: transparent;
-                    cursor: default;
-                    color: #eaeaea;
-                }
-            }
-
-            input {
-                height: 100%;
-                width: 100%;
-                border: none;
-
-                &:focus {
-                    outline: none;
-                }
-            }
-        }
 
         &__content {
             height: 100%;
