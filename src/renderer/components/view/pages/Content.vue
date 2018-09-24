@@ -18,7 +18,7 @@
 
 
             <!-- Search -->
-            <url @navigate="navigate($event)" :value="url" />
+            <url @navigate="navigate($event)" :value="tab.url" />
 
 
             <!-- Close event -->
@@ -35,9 +35,9 @@
                 autosize
                 allowpopups
                 webpreferences="nativeWindowOpen=true"
-                :src="url || startFrom"
-                :guestinstance="hash"
-                :partition="`persist:${hash}`">
+                :src="tab.url || startFrom"
+                :guestinstance="tab.hash"
+                :partition="`persist:${tab.hash}`">
             </webview>
         </div>
 
@@ -54,6 +54,8 @@
     import Bar from './../controls/bar'
     import Url from './../controls/url'
 
+    import {mapGetters} from 'vuex'
+
     const events = {
         'did-finish-load': 'didFinishLoad',
         'page-favicon-updated': 'pageFaviconUpdated',
@@ -65,17 +67,7 @@
     };
 
     const props = {
-        url: {
-            type: String,
-            default: null,
-        },
-
         hash: {
-            type: String,
-            default: null
-        },
-
-        session: {
             type: String,
             default: null
         },
@@ -90,7 +82,7 @@
         props,
         data() {
             return {
-                startFrom: 'http://google.com',
+                startFrom: 'https://google.com',
                 view: null,
                 initialized: false,
                 loading: false,
@@ -101,6 +93,17 @@
             Action, Bar, Url
         },
 
+        computed: {
+
+            ...mapGetters('tabs', ['tabs']),
+            
+            tab() {
+                const tabs = this.tabs || [];
+                return tabs.find(t => t.hash === this.hash);
+            }
+
+        },
+
         methods: {
 
 
@@ -109,9 +112,6 @@
              *
              */
             navigate(url) {
-
-
-
                 this.view.loadURL(url);
                 this.$emit('url', url);
             },
@@ -123,7 +123,7 @@
              */
             didFinishLoad() {
                 this.view.removeEventListener('did-finish-load', this.didFinishLoad);
-                this.navigate(this.url)
+                this.navigate(this.tab.url)
             },
 
 
@@ -138,7 +138,7 @@
 
 
             didNavigate(e) {
-                //this.$emit('url', get(e, 'url', 'about:blank'));
+                this.$emit('url', get(e, 'url', null));
             },
 
 
@@ -175,7 +175,7 @@
              * If it was created now -> load it now
              *
              */
-            if (this.hostSession !== this.session) {
+            if (this.hostSession !== this.tab.session) {
 
                 document.addEventListener("DOMContentLoaded", () => {
                     this.initialized = true;

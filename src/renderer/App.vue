@@ -29,12 +29,8 @@
         <div class="app__views">
             <div class="app__views__container" v-if="tab >= 0 && tabs[tab]">
                 <content-view
-                    v-show="k === tab "
                     v-for="(i,k) in tabs"
-                    :key="i.hash"
-                    :url="i.url"
                     :hash="i.hash"
-                    :session="i.session"
                     :hostSession="session"
                     @url="setURL(k, $event)"
                     @close="removeThisTab(k)"
@@ -68,9 +64,10 @@
     import get from 'lodash/get'
 
     import {mapGetters, mapMutations} from 'vuex'
+    import {name} from '../../package'
 
     export default {
-        name: 'clone-browser',
+        name,
         components: {
             SideBar, SideHead, SideTabs, SideTab,
             Credentials, Controls,
@@ -79,13 +76,23 @@
 
         data() {
             return {
-                session: moment().format('x')
+                session: moment().format('x'),
+                tabs: [],
             }
         },
 
-        computed: mapGetters('tabs', ['tab', 'tabs']),
+        computed: {
+            ...mapGetters('tabs', ['tab']),
+        },
+
 
         methods: {
+
+
+            btoa(string) {
+                return window.btoa(string);
+            },
+
             ...mapMutations('tabs', ['update', 'add', 'remove']),
 
 
@@ -96,10 +103,7 @@
              * @param favicon
              */
             setFavicon(key, favicon) {
-                this.update({
-                    k: `tabs.${key}.favicon`,
-                    v: favicon
-                })
+                this.update({k: `tabs.${key}.favicon`,v: favicon})
             },
 
 
@@ -111,8 +115,10 @@
              */
             setURL(key, url) {
 
-                const currentUrl = get(this.tabs, [this.tab, 'url'], null);
-                if(url !== currentUrl) this.update({k: `tabs.${key}.url`, v: url})
+                let tab = JSON.parse(JSON.stringify(this.tabs[key]));
+                tab.url = url;
+
+                this.update({k: `tabs.${key}`, v: tab})
             },
 
 
@@ -122,10 +128,7 @@
              * @param index
              */
             setActiveTab(index) {
-                this.update({
-                    k: 'tab',
-                    v: index,
-                })
+                this.update({k: 'tab',v: index,})
             },
 
 
@@ -134,7 +137,6 @@
              *
              */
             setNewTab() {
-
                 this.add({session: this.session});
                 this.update({k: 'tab', v: this.tabs.length - 1});
             },
@@ -151,6 +153,10 @@
             }
 
         },
+
+        mounted() {
+            this.tabs = this.$store.getters['tabs/tabs'];
+        }
 
     }
 </script>
