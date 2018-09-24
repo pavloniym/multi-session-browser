@@ -20,6 +20,8 @@
                 </side-tab>
 
             </side-tabs>
+            <controls />
+            <credentials />
         </side-bar>
 
 
@@ -50,8 +52,14 @@
 
 
 
-    import {Bar as SideBar, Head as SideHead, Tabs as SideTabs, Tab as SideTab} from './components/side'
-
+    import {
+        Bar as SideBar,
+        Head as SideHead,
+        Tabs as SideTabs,
+        Tab as SideTab,
+        Credentials,
+        Controls
+    } from './components/side'
 
     import EmptyView from './components/view/pages/Empty'
     import ContentView from './components/view/pages/Content'
@@ -65,6 +73,7 @@
         name: 'clone-browser',
         components: {
             SideBar, SideHead, SideTabs, SideTab,
+            Credentials, Controls,
             EmptyView, ContentView,
         },
 
@@ -103,8 +112,6 @@
             setURL(key, url) {
 
                 const currentUrl = get(this.tabs, [this.tab, 'url'], null);
-                console.log(url, currentUrl, url !== currentUrl);
-
                 if(url !== currentUrl) this.update({k: `tabs.${key}.url`, v: url})
             },
 
@@ -175,7 +182,6 @@
                 width: 100%;
 
                 .app {
-
 
                     &__views {
                         width: 100%;

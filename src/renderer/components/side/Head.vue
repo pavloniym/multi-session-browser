@@ -13,7 +13,9 @@
 
     .side {
         &__head {
+            -webkit-app-region: drag;
             height: 40px;
+            min-height: 40px;
             background: lighten($background, 10);
             display: flex;
             align-items: center;

@@ -37,8 +37,10 @@
     .side {
         &__tab {
 
+            -webkit-app-region: no-drag;
             width: 20px;
             height: 20px;
+            min-height: 20px;
             border-radius: 4px;
             margin: 3px 0;
             border: 1px solid transparent;

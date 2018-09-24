@@ -14,6 +14,8 @@
             background: #2c2c2c;
             height: 100%;
             color: white;
+            display: flex;
+            flex-direction: column;
         }
     }
 
