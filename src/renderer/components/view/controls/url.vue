@@ -42,7 +42,6 @@
 <style scoped lang="scss">
 
     input {
-        -webkit-app-region: drag;
         height: 100%;
         width: 100%;
         border: none;

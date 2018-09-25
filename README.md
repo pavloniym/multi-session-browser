@@ -1,7 +1,10 @@
-# Mulsti Session Browser
+# Multi Session Browser
 
 This is a simple multi session browser  
-Now you can be online in all your accounts and switch them with one click!
+Now you can be online in all your accounts and switch them with one click!  
+You can use it to control all yours Facebook, Twitter, Instagram, Vk, etc accounts
+
+  
 
 
 #### Features:
