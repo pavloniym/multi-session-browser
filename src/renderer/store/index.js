@@ -12,6 +12,6 @@ export default new Vuex.Store({
     },
     strict: process.env.NODE_ENV !== 'production',
     plugins: [createPersistedState({
-        key: 'mykey',
+        key: 'multisession-browser-storage',
     })]
 })

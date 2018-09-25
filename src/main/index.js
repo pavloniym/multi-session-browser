@@ -1,6 +1,9 @@
 import {app, BrowserWindow} from 'electron'
 
-import context from 'electron-context-menu';
+const fs = require('fs');
+const path = require ('path');
+
+
 
 
 /**
@@ -37,12 +40,30 @@ function createWindow() {
 
 }
 
-app.on('ready', createWindow)
+
+function setUserDataFolder() {
+
+    const dir = path.dirname(app.getPath ('exe'));
+
+    //try { fs.writeFileSync(path.join(process.cwd(), "path.txt"), dir, 'utf-8'); }
+    //catch(e) { alert('Failed to save the file !'); }
+
+    app.setPath('userData', `${dir}/msb_user_data/`);
+}
+
+
+setUserDataFolder();
+
+app.on('ready', () => {
+
+    createWindow()
+})
 
 app.on('window-all-closed', () => app.quit())
 
 app.on('activate', () => {
     if (mainWindow === null) {
+        setUserDataFolder()
         createWindow()
     }
 })
