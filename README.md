@@ -1,22 +1,20 @@
-# electron-app
+# Mulsti Session Browser
 
-> An electron-vue project
-
-#### Build Setup
-
-``` bash
-# install dependencies
-npm install
-
-# serve with hot reload at localhost:9080
-npm run dev
-
-# build electron application for production
-npm run build
+This is a simple multi session browser  
+Now you can be online in all your accounts and switch them with one click!
 
 
-```
+#### Features:
+* Isolated: each tab has its own cookies, storage, etc
+* Memory: all tabs are saved and if you relaunch browser — it will restore its state
+* Portable: you can use application with your USB flash drive and take it with yourself or just run it on your computer without installation
+* Platform: available for Windows, Linux and MacOS
 
----
 
-This project was generated with [electron-vue](https://github.com/SimulatedGREG/electron-vue)@[fad1966](https://github.com/SimulatedGREG/electron-vue/tree/fad1966ffb4b7f27639e224bbbebf349f7ef7d8a) using [vue-cli](https://github.com/vuejs/vue-cli). Documentation about the original structure can be found [here](https://simulatedgreg.gitbooks.io/electron-vue/content/index.html).
+
+#### Technologies
+* electron
+* [electron-vue](https://github.com/SimulatedGREG/electron-vue)
+* vue
+* vuex
+* [vuex-persistedstate](https://github.com/robinvdvleuten/vuex-persistedstate)
