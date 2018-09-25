@@ -11,31 +11,30 @@
 
 
             <!-- Loading -->
-            <action :icon="!loading ? 'fa fa-refresh' : 'fa fa-times'" @click.native="loading ? view.stop() : view.reload()"/>
+            <action :icon="!loading ? 'fa fa-refresh' : 'fa fa-times'"
+                    @click.native="loading ? view.stop() : view.reload()"/>
             <action class="not-interactive">
                 <i class="fa fa-circle-o-notch fa-spin" v-if="loading"></i>
             </action>
 
 
             <!-- Search -->
-            <url @navigate="navigate($event)" :value="tab.url" />
+            <url @navigate="navigate($event)" :value="tab.url"/>
 
 
             <!-- Close event -->
-            <action icon="fa fa-trash" @click.native="$emit('close')" />
+            <action icon="fa fa-trash" @click.native="$emit('close')"/>
 
         </bar>
 
         <!-- View -->
         <div class="view__container__content">
             <webview
-                class="webview"
                 v-if="initialized"
-                ref="view"
                 autosize
-                allowpopups
-                webpreferences="nativeWindowOpen=true"
-                :src="tab.url || startFrom"
+                class="webview"
+                ref="view"
+                src="data:text/plain"
                 :guestinstance="tab.hash"
                 :partition="`persist:${tab.hash}`">
             </webview>
@@ -48,31 +47,30 @@
 
 <script>
 
-    import get from 'lodash/get'
 
     import Action from './../controls/action'
     import Bar from './../controls/bar'
     import Url from './../controls/url'
 
-    import {mapGetters} from 'vuex'
+    import {parsing} from "../../../utils/hashing";
+    import get from 'lodash/get'
 
     const events = {
         'did-finish-load': 'didFinishLoad',
         'page-favicon-updated': 'pageFaviconUpdated',
-        'did-navigate': 'didNavigate',
-        'did-navigate-in-page': 'didNavigate',
         'new-window': 'newWindow',
         'did-start-loading': 'didStartLoading',
         'did-stop-loading': 'didStopLoading',
     };
 
     const props = {
-        hash: {
+
+        configuration: {
             type: String,
             default: null
         },
 
-        hostSession: {
+        session: {
             type: String,
             default: null
         }
@@ -82,38 +80,38 @@
         props,
         data() {
             return {
-                startFrom: 'https://google.com',
+                default: 'https://google.com',
+                url: parsing(this.configuration).url,
                 view: null,
                 initialized: false,
                 loading: false,
+
             }
         },
 
-        components: {
-            Action, Bar, Url
-        },
+        components: {Action, Bar, Url},
 
         computed: {
 
-            ...mapGetters('tabs', ['tabs']),
-            
+            /**
+             * Get tab from configuration b64
+             *
+             * @returns {{}}
+             */
             tab() {
-                const tabs = this.tabs || [];
-                return tabs.find(t => t.hash === this.hash);
-            }
-
+                return parsing(this.configuration)
+            },
         },
 
         methods: {
 
 
             /**
-             * Set view src
+             * Load url
              *
              */
             navigate(url) {
-                this.view.loadURL(url);
-                this.$emit('url', url);
+                this.view.loadURL(url || this.default);
             },
 
 
@@ -127,28 +125,43 @@
             },
 
 
+            /**
+             * Emit event with new favicon
+             *
+             */
             pageFaviconUpdated(r) {
                 this.$emit('favicon', get(r, 'favicons.0', null));
             },
 
 
+            /**
+             * Navigate then new window is opened
+             *
+             */
             newWindow(e) {
-                this.navigate(get(e, 'url', this.startFrom))
+                this.navigate(get(e, 'url', this.default))
             },
 
 
-            didNavigate(e) {
-                this.$emit('url', get(e, 'url', null));
-            },
 
-
+            /**
+             * Start loading page
+             *
+             */
             didStartLoading() {
                 this.loading = true;
             },
 
 
+
+            /**
+             * Finish loading page
+             * Set new url
+             *
+             */
             didStopLoading() {
                 this.loading = false;
+                this.url = this.view.getURL();
             },
 
 
@@ -175,7 +188,7 @@
              * If it was created now -> load it now
              *
              */
-            if (this.hostSession !== this.tab.session) {
+            if (this.session !== this.tab.session) {
 
                 document.addEventListener("DOMContentLoaded", () => {
                     this.initialized = true;
@@ -190,6 +203,21 @@
         },
 
 
+        watch: {
+
+            /**
+             * Watch for url change
+             * Emit event
+             *
+             */
+            url: {
+                handler(url) {
+                    this.$emit('url', url)
+                }
+            }
+
+        }
+
     }
 </script>
 
@@ -199,7 +227,6 @@
         height: 100%;
         display: flex;
         flex-direction: column;
-
 
         &__content {
             height: 100%;

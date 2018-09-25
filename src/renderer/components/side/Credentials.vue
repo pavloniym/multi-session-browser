@@ -2,7 +2,7 @@
 
     <div class="side__credentials">
         <!--<a href="#" @click="open(repository)">PS</a>-->
-        <a href="#" @click="open(releases)">v{{version}}</a>
+        <a href="#" @click="open(releases)">{{version}}</a>
     </div>
 
 </template>

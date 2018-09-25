@@ -20,18 +20,19 @@
                 </side-tab>
 
             </side-tabs>
-            <controls />
-            <credentials />
+            <controls/>
+            <credentials/>
         </side-bar>
-
 
 
         <div class="app__views">
             <div class="app__views__container" v-if="tab >= 0 && tabs[tab]">
                 <content-view
-                    v-for="(i,k) in tabs"
-                    :hash="i.hash"
-                    :hostSession="session"
+                    v-for="(t,k) in tabs"
+                    v-show="k === tab"
+                    :key="t.hash"
+                    :configuration="hashTab(t)"
+                    :session="session"
                     @url="setURL(k, $event)"
                     @close="removeThisTab(k)"
                     @favicon="setFavicon(k, $event)">
@@ -47,24 +48,23 @@
 <script>
 
 
-
     import {
         Bar as SideBar,
-        Head as SideHead,
-        Tabs as SideTabs,
-        Tab as SideTab,
+        Controls,
         Credentials,
-        Controls
+        Head as SideHead,
+        Tab as SideTab,
+        Tabs as SideTabs
     } from './components/side'
 
     import EmptyView from './components/view/pages/Empty'
     import ContentView from './components/view/pages/Content'
 
     import moment from 'moment'
-    import get from 'lodash/get'
 
     import {mapGetters, mapMutations} from 'vuex'
     import {name} from '../../package'
+    import {hashing} from "./utils/hashing";
 
     export default {
         name,
@@ -77,23 +77,23 @@
         data() {
             return {
                 session: moment().format('x'),
-                tabs: [],
             }
         },
 
-        computed: {
-            ...mapGetters('tabs', ['tab']),
-        },
-
-
+        computed: mapGetters('tabs', ['tab', 'tabs']),
         methods: {
 
-
-            btoa(string) {
-                return window.btoa(string);
-            },
-
             ...mapMutations('tabs', ['update', 'add', 'remove']),
+
+
+            /**
+             * Hash tab's object to b64
+             *
+             * @returns {string}
+             */
+            hashTab(tab) {
+                return hashing(tab);
+            },
 
 
             /**
@@ -103,7 +103,7 @@
              * @param favicon
              */
             setFavicon(key, favicon) {
-                this.update({k: `tabs.${key}.favicon`,v: favicon})
+                this.update({k: `tabs.${key}.favicon`, v: favicon})
             },
 
 
@@ -114,11 +114,7 @@
              * @param url
              */
             setURL(key, url) {
-
-                let tab = JSON.parse(JSON.stringify(this.tabs[key]));
-                tab.url = url;
-
-                this.update({k: `tabs.${key}`, v: tab})
+                this.update({k: `tabs.${key}.url`, v: url})
             },
 
 
@@ -128,7 +124,7 @@
              * @param index
              */
             setActiveTab(index) {
-                this.update({k: 'tab',v: index,})
+                this.update({k: 'tab', v: index,})
             },
 
 
@@ -142,7 +138,6 @@
             },
 
 
-
             /**
              * Remove tab from stack
              *
@@ -154,9 +149,6 @@
 
         },
 
-        mounted() {
-            this.tabs = this.$store.getters['tabs/tabs'];
-        }
 
     }
 </script>

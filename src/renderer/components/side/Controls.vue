@@ -2,7 +2,6 @@
 
     <div class="side__controls">
 
-        <div class="side__controls__action" ><i class="fa fa-cog"></i></div>
         <div class="side__controls__action" @click="reload"><i class="fa fa-refresh"></i></div>
 
         <span></span>
@@ -23,21 +22,37 @@
 
         methods: {
 
+            /**
+             * Close browser
+             *
+             */
             close() {
                 this.$electron.remote.getCurrentWindow().close();
             },
 
 
+            /**
+             * Maximize browser window
+             *
+             */
             maximize() {
                 this.$electron.remote.BrowserWindow.getFocusedWindow().maximize();
             },
 
 
+            /**
+             * Minimize browser window
+             *
+             */
             minimize() {
                 this.$electron.remote.BrowserWindow.getFocusedWindow().minimize();
             },
 
 
+            /**
+             * Reload app
+             *
+             */
             reload() {
                 location.reload();
             }

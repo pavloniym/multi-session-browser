@@ -1,6 +1,7 @@
 import set from 'lodash/set'
 import moment from 'moment'
 
+
 export default  {
 
     namespaced: true,
@@ -34,10 +35,9 @@ export default  {
         add: (s, {session}) => s.tabs.push({
             favicon: null,
             hash: moment().format('x'),
-            url: null,
+            url: 'https://google.com',
             session
         }),
-
 
 
         remove: (s, index) => s.tabs.splice(index, 1),
