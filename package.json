@@ -1,6 +1,6 @@
 {
     "name": "multisession-browser",
-    "version": "0.0.9",
+    "version": "0.0.91",
     "author": "Pavel Sharypov <pavloniym@gmail.com>",
     "description": "Multisession browser",
     "license": null,
@@ -18,8 +18,8 @@
         "postinstall": ""
     },
     "repository": {
-        "type" : "git",
-        "url" : "https://github.com/PavelShar/multisession-browser"
+        "type": "git",
+        "url": "https://github.com/PavelShar/multisession-browser"
     },
     "build": {
         "productName": "multisession-browser",
@@ -56,6 +56,7 @@
         }
     },
     "dependencies": {
+        "electron-context-menu": "^0.10.0",
         "font-awesome": "^4.7.0",
         "lodash": "^4.17.10",
         "moment": "^2.22.2",

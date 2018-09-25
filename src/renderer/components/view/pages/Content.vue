@@ -55,6 +55,8 @@
     import {parsing} from "../../../utils/hashing";
     import get from 'lodash/get'
 
+    import context from 'electron-context-menu'
+
     const events = {
         'did-finish-load': 'didFinishLoad',
         'page-favicon-updated': 'pageFaviconUpdated',
@@ -117,10 +119,19 @@
 
             /**
              * Fire then webview finish loading
+             * Run context menu
+             * Navigate to url
              *
              */
             didFinishLoad() {
                 this.view.removeEventListener('did-finish-load', this.didFinishLoad);
+
+                context({
+                    window: this.view,
+                    showCopyImageAddress: true,
+                    showInspectElement: true,
+                });
+
                 this.navigate(this.tab.url)
             },
 
@@ -238,6 +249,8 @@
                 left: 0;
                 width: 100%;
                 height: 100%;
+                min-width: 100%;
+                min-height: 100%;
                 display: inline-flex !important;
             }
         }

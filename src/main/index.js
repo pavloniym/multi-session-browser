@@ -1,5 +1,8 @@
 import {app, BrowserWindow} from 'electron'
 
+import context from 'electron-context-menu';
+
+
 /**
  * Set `__static` path to static files in production
  * https://simulatedgreg.gitbooks.io/electron-vue/content/en/using-static-assets.html
@@ -27,7 +30,11 @@ function createWindow() {
 
     mainWindow.on('closed', () => {
         mainWindow = null
-    })
+    });
+
+
+
+
 }
 
 app.on('ready', createWindow)
