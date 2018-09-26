@@ -11,7 +11,7 @@ You can use it to control all yours Facebook, Twitter, Instagram, Vk, etc accoun
 * Isolated: each tab has its own cookies, storage, etc
 * Memory: all tabs are saved and if you relaunch browser — it will restore its state
 * Portable: you can use application with your USB flash drive and take it with yourself or just run it on your computer without installation
-* Platform: available for Windows, Linux and MacOS
+* Platform: [available](https://github.com/PavelShar/multi-session-browser/releases) for Windows, Linux and MacOS
 
 
 
